@@ -4,7 +4,7 @@ import { z } from "zod";
 import { hashedPassword } from "@/lib/auth";
 import { TRPCError } from "@trpc/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "../auth";
 import { transactionType } from "@prisma/client";
 
 export const transactionRouter = router({
@@ -19,9 +19,9 @@ export const transactionRouter = router({
       where: {
         userId: user?.id,
       },
-      orderBy:{
-        createdAt:'desc'
-      }
+      orderBy: {
+        createdAt: "desc",
+      },
     });
     return {
       transactions,

@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import React from "react";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "../server/auth";
 import { MoveDown, MoveUp } from "lucide-react";
 import Transactions from "@/components/Transactions";
 import { api } from "./_trpc/server";
