@@ -6,6 +6,8 @@ import { TRPCError } from "@trpc/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
 import { transactionType } from "@prisma/client";
+import { sendMail } from "@/lib/mail";
+import { generateExpenseIncomeEmail } from "@/lib/emailTemplates";
 
 export const transactionRouter = router({
   getAllTransaction: publicProcedure.query(async () => {
@@ -154,4 +156,76 @@ export const transactionRouter = router({
         console.log(error);
       }
     }),
+  getMonthlyReport: publicProcedure.mutation(async () => {
+    try {
+      const session = await getServerSession(authOptions);
+      const user = await prisma.user.findFirst({
+        where: {
+          email: session?.user?.email,
+        },
+      });
+      // Get current month and year
+      const currentMonth = new Date().getMonth() + 1; // getMonth() returns 0-based index
+      const currentYear = new Date().getFullYear();
+
+      // Calculate start and end date for the current month
+      const startDate = new Date(currentYear, currentMonth - 1, 1); // Month is 0-indexed
+      const endDate = new Date(currentYear, currentMonth, 0); // Last day of current month
+      const income = await prisma.transactions.findMany({
+        where: {
+          userId: user?.id,
+          transType: "INCOME",
+          createdAt: {
+            gte: startDate,
+            lt: endDate,
+          },
+        },
+        select: {
+          amount: true,
+          name: true,
+        },
+      });
+      const expense = await prisma.transactions.findMany({
+        where: {
+          userId: user?.id,
+          transType: "EXPENSE",
+          createdAt: {
+            gte: startDate,
+            lt: endDate,
+          },
+        },
+        select: {
+          amount: true,
+          name: true,
+        },
+      });
+      const totalIncome = income.reduce(
+        (sum, transaction) => sum + parseFloat(transaction.amount ?? ""),
+        0
+      );
+      const totalExpense = expense.reduce(
+        (sum, transaction) => sum + parseFloat(transaction.amount ?? ""),
+        0
+      );
+      await sendMail({
+        receiverEmail: user?.email ?? "",
+        subject: "Monthly Expense and Income Report",
+        text: "",
+        htmlBody: generateExpenseIncomeEmail(
+          user?.name ?? "",
+          expense,
+          income,
+          totalExpense,
+          totalIncome
+        ),
+      });
+      return {
+        message: "Report send",
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+    }
+  }),
 });

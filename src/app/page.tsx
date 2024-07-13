@@ -6,6 +6,7 @@ import Transactions from "@/components/Transactions";
 import { api } from "./_trpc/server";
 import Logout from "@/components/Logout";
 import Greeting from "@/components/Greeting";
+import GetMonthlyReport from "@/components/GetMonthlyReport";
 
 const page = async () => {
   const session = await getServerSession(authOptions);
@@ -24,9 +25,14 @@ const page = async () => {
           <Logout />
         </div>
         <div className="absolute bg-[#2F7E79] w-[350px] top-36 h-48 shadow-lg rounded-2xl p-5">
-          <div>
+          <div className="flex items-center justify-between">
+            <div>
             <p className="text-md text-white font-medium">Total Balance</p>
             <p className="text-2xl text-white font-medium">₹{data?.balance}</p>
+            </div>
+            <div>
+              <GetMonthlyReport/>
+            </div>
           </div>
           <div className="flex justify-between mt-10 px-2 text-white">
             <div className="flex flex-col gap-1">
