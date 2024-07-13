@@ -5,21 +5,24 @@ import { MoveDown, MoveUp } from "lucide-react";
 import Transactions from "@/components/Transactions";
 import { api } from "./_trpc/server";
 import Logout from "@/components/Logout";
+import Greeting from "@/components/Greeting";
 
 const page = async () => {
   const session = await getServerSession(authOptions);
   const data = await api.transactions.getCalculation();
-  const {transactions} = await api.transactions.getAllTransaction()
+  const { transactions } = await api.transactions.getAllTransaction();
   return (
     <div>
       <div className="relative bg-gradient-to-r from-[#429690] to-[#429690] h-56 rounded-b-[80px] flex justify-center">
         <div className="absolute left-0 flex flex-col w-full top-12">
-          <p className="ml-8 text-white font-normal text-sm">Good Afternoon</p>
+          <Greeting />
           <p className="ml-8 text-white font-semibold text-xl">
             {session?.user?.name}
           </p>
         </div>
-        <div className="absolute top-12 right-6"><Logout/></div>
+        <div className="absolute top-12 right-6">
+          <Logout />
+        </div>
         <div className="absolute bg-[#2F7E79] w-[350px] top-36 h-48 shadow-lg rounded-2xl p-5">
           <div>
             <p className="text-md text-white font-medium">Total Balance</p>
@@ -47,7 +50,7 @@ const page = async () => {
           </div>
         </div>
       </div>
-      <Transactions transactions={transactions}/>
+      <Transactions transactions={transactions} />
     </div>
   );
 };

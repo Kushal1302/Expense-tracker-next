@@ -3,9 +3,15 @@ import React, { useState } from "react";
 import AddTrModal from "./modals/AddTrModal";
 import { api } from "@/app/_trpc/react";
 import { transactions } from "@prisma/client";
+import { Trash2Icon } from "lucide-react";
+import DeleteConfirmationModal from "./modals/DeletModal";
+import { useRouter } from "next/navigation";
 
 const Transactions = ({ transactions }: { transactions: transactions[] }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [transactionId, setTransactionId] = useState("");
+  const router = useRouter();
   const formatDateLabel = (createdAt: Date) => {
     const transactionDate = new Date(createdAt);
 
@@ -44,6 +50,27 @@ const Transactions = ({ transactions }: { transactions: transactions[] }) => {
       someDate.getFullYear() === yesterday.getFullYear()
     );
   };
+  const { mutate: DeleteTransaction } =
+    api.transactions.deleteTransactionById.useMutation({
+      onSuccess: (data) => {
+        alert(data?.message);
+        router.refresh();
+      },
+      onError: (err) => {
+        console.log(err.message);
+        router.refresh();
+      },
+    });
+  const handleConfirmDelete = () => {
+    DeleteTransaction({
+      id: transactionId,
+    });
+    setOpenDeleteModal(false);
+  };
+
+  const handleCancelDelete = () => {
+    setOpenDeleteModal(false);
+  };
 
   return (
     <div className="mt-36 px-2">
@@ -72,22 +99,38 @@ const Transactions = ({ transactions }: { transactions: transactions[] }) => {
                         {formatDateLabel(transaction.createdAt)}
                       </p>
                     </div>
-                    <p
-                      className={`text-xl font-bold ${
-                        transaction.transType === "INCOME"
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {transaction.transType === "INCOME" ? "+" : "-"}
-                      {transaction.amount}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p
+                        className={`text-xl font-bold ${
+                          transaction.transType === "INCOME"
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {transaction.transType === "INCOME" ? "+" : "-"}
+                        {transaction.amount}
+                      </p>
+                      <Trash2Icon
+                        size={20}
+                        color="red"
+                        className="cursor-pointer hover:scale-110"
+                        onClick={() => {
+                          setOpenDeleteModal(true);
+                          setTransactionId(transaction.id);
+                        }}
+                      />
+                    </div>
                   </div>
                 </td>
               </tr>
             ))}
         </tbody>
       </table>
+      <DeleteConfirmationModal
+        isOpen={openDeleteModal}
+        onCancel={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };
