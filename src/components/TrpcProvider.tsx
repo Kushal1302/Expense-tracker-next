@@ -10,7 +10,7 @@ const TrpcProvider = ({ children }: PropsWithChildren) => {
     api.createClient({
       links: [
         httpBatchLink({
-          url: process.env.url ?? "http://localhost:3000/api/trpc",
+          url: process.env.url ?? "https://expense-tracker-next-sepia.vercel.app/api/trpc",
         }),
       ],
     })
