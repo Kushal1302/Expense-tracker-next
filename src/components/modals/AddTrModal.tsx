@@ -37,8 +37,8 @@ const AddTrModal = ({
     },
   });
   const { mutate } = api.transactions.addTransaction.useMutation({
-    onSuccess: () => {
-      alert("Transaction added");
+    onSuccess: (data) => {
+      alert(data?.message);
       router.refresh();
       reset();
     },
