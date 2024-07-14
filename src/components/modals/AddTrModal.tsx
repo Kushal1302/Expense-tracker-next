@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@/app/_trpc/react";
 import { useRouter } from "next/navigation";
+import { LoaderCircle } from "lucide-react";
 
 const AddTrModal = ({
   setIsModalOpen,
@@ -36,16 +37,16 @@ const AddTrModal = ({
       transType: undefined,
     },
   });
-  const { mutate } = api.transactions.addTransaction.useMutation({
+  const { mutate, isPending } = api.transactions.addTransaction.useMutation({
     onSuccess: (data) => {
+      handleCloseModal();
       alert(data?.message);
       router.refresh();
-      reset();
     },
     onError: (err) => {
       console.log(err);
       router.refresh();
-      reset();
+      handleCloseModal();
     },
   });
 
@@ -53,7 +54,6 @@ const AddTrModal = ({
     // Handle form submission logic here
     mutate(data);
     console.log(data);
-    handleCloseModal();
   };
 
   const handleCloseModal = () => {
@@ -128,8 +128,13 @@ const AddTrModal = ({
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600"
+                  disabled={isPending}
                 >
-                  Add
+                  {isPending ? (
+                    <LoaderCircle className="animate-spin" />
+                  ) : (
+                    "Add"
+                  )}
                 </button>
               </div>
             </form>

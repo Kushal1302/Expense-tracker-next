@@ -1,14 +1,16 @@
 import React from "react";
-import { TrashIcon } from "lucide-react";
+import { LoaderCircle, TrashIcon } from "lucide-react";
 
 const DeleteConfirmationModal = ({
   isOpen,
   onCancel,
   onConfirm,
+  DeletePending,
 }: {
   isOpen: boolean;
   onCancel: () => void;
   onConfirm: () => void;
+  DeletePending: boolean;
 }) => {
   if (!isOpen) return null;
 
@@ -45,8 +47,13 @@ const DeleteConfirmationModal = ({
           <button
             onClick={handleConfirm}
             className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600"
+            disabled={DeletePending}
           >
-            Delete
+            {DeletePending ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              "Delete"
+            )}
           </button>
         </div>
       </div>
