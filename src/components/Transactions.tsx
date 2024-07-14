@@ -50,13 +50,15 @@ const Transactions = ({ transactions }: { transactions: transactions[] }) => {
       someDate.getFullYear() === yesterday.getFullYear()
     );
   };
-  const { mutate: DeleteTransaction } =
+  const { mutate: DeleteTransaction, isPending: DeletePending } =
     api.transactions.deleteTransactionById.useMutation({
       onSuccess: (data) => {
+        setOpenDeleteModal(false);
         alert(data?.message);
         router.refresh();
       },
       onError: (err) => {
+        setOpenDeleteModal(false);
         console.log(err.message);
         router.refresh();
       },
@@ -65,7 +67,6 @@ const Transactions = ({ transactions }: { transactions: transactions[] }) => {
     DeleteTransaction({
       id: transactionId,
     });
-    setOpenDeleteModal(false);
   };
 
   const handleCancelDelete = () => {
@@ -130,6 +131,7 @@ const Transactions = ({ transactions }: { transactions: transactions[] }) => {
         isOpen={openDeleteModal}
         onCancel={handleCancelDelete}
         onConfirm={handleConfirmDelete}
+        DeletePending={DeletePending}
       />
     </div>
   );

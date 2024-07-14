@@ -14,7 +14,7 @@ const Greeting = () => {
       setGreeting("Good Evening");
     }
   }, []);
-  return <p className="ml-8 text-white font-normal text-sm">{greeting}</p>;
+  return <p className="text-white font-normal text-sm">{greeting}</p>;
 };
 
 export default Greeting;
