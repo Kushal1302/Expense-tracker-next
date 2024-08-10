@@ -13,7 +13,7 @@ const nextConfig = {
     url: process.env.url,
     GOOGLE_ID: process.env.GOOGLE_ID,
     GOOGLE_SECRET: process.env.GOOGLE_SECRET,
-    SMTP_USER: process.envg.SMTP_USER,
+    SMTP_USER: process.env.SMTP_USER,
     SMTP_PASS: process.env.SMTP_PASS,
     SMTP_HOST: process.env.SMTP_HOST,
   },
