@@ -55,9 +55,6 @@ COPY --from=builder /app/prisma ./prisma
 # Generate Prisma Client for Production (since it might not have been copied correctly)
 RUN npx prisma generate
 
-# Install Sharp for image optimization
-RUN npm install sharp
-
 # Optional: Remove unnecessary binaries/libraries
 RUN rm -rf /usr/share/man /var/cache/apk/*
 
